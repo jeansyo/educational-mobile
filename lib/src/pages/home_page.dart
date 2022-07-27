@@ -1,4 +1,5 @@
 import 'package:appedvies/src/pages/asignaturas_page.dart';
+import 'package:appedvies/src/pages/evaluaciones_recientes_page.dart';
 import 'package:appedvies/src/pages/ultimo_material_page.dart';
 import 'package:flutter/material.dart';
 class HomePage extends StatelessWidget {
@@ -10,7 +11,7 @@ class HomePage extends StatelessWidget {
       length: 2, 
       child: Scaffold(
         appBar:AppBar(
-          toolbarHeight: 20.0,
+          toolbarHeight: 10.0,
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,
           bottom: TabBar(
@@ -20,16 +21,22 @@ class HomePage extends StatelessWidget {
                 Tab(
                   icon: Icon(
                     Icons.auto_mode,
-                    size: 40.0,
+                    size: 30.0,
                   ),
-                  text: "Material Reciente",
+                  text: "Material \nReciente",
                 ),
                 Tab(
                     icon: Icon(
                       Icons.school,
-                      size: 40.0,
+                      size: 30.0,
                     ),
-                    text: "Asignaturas"),
+                    text: "Asignaturas\n"),
+                // Tab(
+                //     icon: Icon(
+                //       Icons.fact_check_outlined ,
+                //       size: 30.0,
+                //     ),
+                //     text: "Evaluaciones\n"),
               ],
         
           ),
@@ -37,7 +44,8 @@ class HomePage extends StatelessWidget {
         ),
         body: TabBarView(children: <Widget>[
           UltimoMaterialPage(),
-          AsignaturasPage()
+          AsignaturasPage(),
+         // EvaluacionesRecientesPage(),
         ])
 
         )

@@ -1,11 +1,26 @@
 import 'dart:io';
 
 import 'package:appedvies/src/bloc/perfil_bloc.dart';
+import 'package:appedvies/src/models/evaluacion.dart';
 import 'package:appedvies/src/models/materiale.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+Future<double> obtienePorcentaje(int total,int fraccion) async {
+  if(total==0 &&fraccion ==0)
+  {return await 0;}
+  else
+  {if(fraccion == 0)
+      {return await 0;}
+    else{
+      double porcentaje = (fraccion/total);
+      return await porcentaje;
+    }
+  }
+  
+}
 
 Future<String> ObtenerDireccionLocalArchivo(uniqueFileName) async {
     String path = '';
@@ -152,7 +167,18 @@ mostrarSnackbar(BuildContext context, String mensaje, Color color,
       backgroundColor: color //Theme.of(context).primaryColor,
       ));
 }
-
+mostrarSnackbar2(BuildContext context, String mensaje, Color color,
+    Color colorTxt, int duracion) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        mensaje,
+        //"¡Cita Confirmada extosamente!",
+        style: TextStyle(color: colorTxt,fontSize: 50.0),
+      ),
+      duration: Duration(milliseconds: duracion),
+      backgroundColor: color //Theme.of(context).primaryColor,
+      ));
+}
 String diaByNumero(int dia) {
   switch (dia) {
     case 1:
@@ -221,4 +247,56 @@ String mesByNumero(int mes) {
       return ('');
       break;
   }
+}
+
+//Tue Jul 05 2022 20:00:00 GMT-0400 (hora de Venezuela)
+
+String fechaFormat(String fecha){
+  List <String> cads = fecha.split(" ");
+
+  switch (cads[1] ) {
+    
+      case 'Jan':
+       return '${cads[2]}/01/${cads[3]} ${cads[4]}';
+      break;
+      case 'Feb':
+        return '${cads[2]}/02/${cads[3]} ${cads[4]}';
+      break;
+      case 'Mar':
+       return '${cads[2]}/03/${cads[3]} ${cads[4]}';
+      break;
+      case 'Apr':
+        return '${cads[2]}/04/${cads[3]} ${cads[4]}';
+      break;
+      case 'May':
+       return '${cads[2]}/05/${cads[3]} ${cads[4]}';
+      break;
+      case 'Jun':
+       return '${cads[2]}/06/${cads[3]} ${cads[4]}';
+      break;
+      case 'Jul':
+       return '${cads[2]}/07/${cads[3]} ${cads[4]}';
+      break;
+      case 'Aug':
+        return '${cads[2]}/08/${cads[3]} ${cads[4]}';
+      break;
+      case 'Sep':
+       return '${cads[2]}/09/${cads[3]} ${cads[4]}';
+      break;
+      case 'Oct':
+       return '${cads[2]}/010/${cads[3]} ${cads[4]}';
+      break;
+      case 'Nov':
+       return '${cads[2]}/11/${cads[3]} ${cads[4]}';
+      break;
+      case 'Dec':
+       return '${cads[2]}/12/${cads[3]} ${cads[4]}';
+      break;
+    default:
+    return '00/00/0000';
+  }
+}
+List<Evaluacion> quitaRep(List<Evaluacion> listae){
+
+  return listae;
 }

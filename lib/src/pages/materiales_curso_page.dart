@@ -2,6 +2,7 @@ import 'package:appedvies/src/estilos.dart';
 import 'package:appedvies/src/models/curso.dart';
 import 'package:appedvies/src/models/materiale.dart';
 import 'package:appedvies/src/models/route_argument.dart';
+import 'package:appedvies/src/pages/evaluaciones_recientes_page.dart';
 import 'package:appedvies/src/providers/db_provider.dart';
 import 'package:appedvies/src/utils.dart';
 import 'package:dio/dio.dart';
@@ -28,6 +29,7 @@ class _MaterialesCursoPageState extends State<MaterialesCursoPage> {
   String progress = '0';
   bool isDownloaded = false;
   List <Materiale> lMateriales =[];
+  double avance = 0.0;
   @override
   void initState() {
     super.initState();
@@ -36,66 +38,106 @@ class _MaterialesCursoPageState extends State<MaterialesCursoPage> {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          children: [
-            //Text(curso!.name?? ""),
-            
-           
-          ],
-        ),
-
-     ),
-      body: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.only(top:10.0),
-            child: Text(
-              curso!.name??'',
-              style: Estilos.titulo_page(Colors.black),)
-              ),
-          Container(
-            margin: EdgeInsets.all(5.0),
-            // decoration: BoxDecoration(
-            //   borderRadius: BorderRadius.circular(30.0),
-            //   border: Border.all(color: Theme.of(context).primaryColorDark,width: 2.0 )
-            // ),
-            height: MediaQuery.of(context).size.height*0.11,
-            child: ListTile(
-              title: Text(curso!.classname??"", maxLines: 3,  style: Estilos.titMat(Theme.of(context).primaryColorDark)),
-              subtitle:  Text('Recomendaciones:   ${curso!.recommended??""}' , maxLines: 3, style: Estilos.subtitMat(Colors.black)),
-            ),
-            ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height*0.70 ,
-            width: double.infinity,
-            child: Stack(
+    return WillPopScope(
+      onWillPop: ()async {
+        Navigator.pushNamedAndRemoveUntil(context, '/Principal', (route) => false);
+        return false;
+        },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).primaryColor ,
+          title: Column(
             children: [
-              Container(child: 
-              cargando
-              ? Center(child: CircularProgressIndicator())
-              :ListView.builder( 
-                itemCount: lMateriales.length,
-                itemBuilder:(BuildContext context,index){
-                  return _material(lMateriales.elementAt(index));
-                } 
-                )
-              ),
-              downloading
-              ?Container(height: MediaQuery.of(context).size.height,
-              alignment: Alignment.center,
-              width: MediaQuery.of(context).size.width,
-              color: Color.fromRGBO(255, 255, 255, 0.5),
-              child: Text('$progress %'),
-              )
-              :Container(height: 0,width:0)
+              //Text(curso!.name?? ""),
+              
+             
             ],
-    ),
           ),
-        ],
-      )
-      
+    
+       ),
+        body: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.only(top:10.0),
+              child: Text(
+                curso!.name??'',
+                style: Estilos.titulo_page(Colors.black),)
+                ),
+            Container(
+              margin: EdgeInsets.all(5.0),
+              // decoration: BoxDecoration(
+              //   borderRadius: BorderRadius.circular(30.0),
+              //   border: Border.all(color: Theme.of(context).primaryColorDark,width: 2.0 )
+              // ),
+              height: MediaQuery.of(context).size.height*0.10,
+              child: ListTile(
+                title: Text(curso!.classname??"", maxLines: 3,  style: Estilos.titMat(Theme.of(context).primaryColorDark)),
+                subtitle:  Text('Recomendaciones:   ${curso!.recommended??""}' , maxLines: 3, style: Estilos.subtitMat(Colors.black)),
+              ),
+              ),
+              Stack(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(4.0),
+                            decoration: BoxDecoration(
+
+                              borderRadius: BorderRadius.circular(6.0),
+                              color: Color.fromRGBO(144, 202, 249,1.0)
+                            ),
+                            child: LinearProgressIndicator(
+                              value: avance,
+                              minHeight: 18.0,
+                              ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(top: 2.5),
+                            alignment: Alignment.center,
+                            child: Text('${(avance*100).round()} %',style: Estilos.texto_barra(Colors.white),),)
+                        ],
+                      ),
+                      
+            SizedBox(
+              height: MediaQuery.of(context).size.height*0.61 ,
+              width: double.infinity,
+              child: Stack(
+              children: [
+                Container(child: 
+                cargando
+                ? Center(child: CircularProgressIndicator())
+                :ListView.builder( 
+                  itemCount: lMateriales.length,
+                  itemBuilder:(BuildContext context,index){
+                    return _material(lMateriales.elementAt(index));
+                  } 
+                  )
+                ),
+                downloading
+                ?Container(height: MediaQuery.of(context).size.height,
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.width,
+                color: Color.fromRGBO(255, 255, 255, 0.5),
+                child: Text('$progress %'),
+                )
+                :Container(height: 0,width:0)
+              ],
+      ),
+            ),
+            ElevatedButton(
+              onPressed: (){
+                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EvaluacionesRecientesPage(
+                                      curso: this.curso,
+                                    ),
+                                  ),
+                                );
+              }, 
+              child: Text('Evaluaciones'))
+          ],
+        )
+        
+      ),
     );
   }
 
@@ -243,10 +285,14 @@ _showPopupMenu(Offset offset,Materiale materiald) async {
     setState(() {});
 
     this.lMateriales = await DBProvider.db.getMaterialesByIdCurso(idcurso);
-
+    await obtieneAvance(idcurso);
     cargando =false;
     setState(() {});
-    
+   
+  }
 
+  obtieneAvance(int idcur)async {
+     this.avance = await obtienePorcentaje(await DBProvider.db.contarMaterialesXCurso(idcur), 
+                      await DBProvider.db.contarMaterialesXestadoYCurso(idcur,1));   
   }
 }

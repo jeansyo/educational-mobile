@@ -149,6 +149,25 @@ Future<List<Materiale>>getMaterialesByIdCurso(int idCurso) async {
               :[] ;
     return list;
   }
+
+   //contar materiales por estado de descarga y curso al que pertenece
+  Future<int>contarMaterialesXestadoYCurso(int id_curso,int estado) async{
+    final db = await database;
+    final res = await db.rawQuery('SELECT COUNT (*) as cant from Materiale where descargado = $estado and courseID =$id_curso');
+    print ("materiales estado");
+    print (res[0]["cant"]);
+    return  int.parse(res[0]["cant"].toString()) ;
+  }
+
+   //contar materiales por estado de descarga
+  Future<int>contarMaterialesXCurso(int id_curso) async{
+    final db = await database;
+    final res = await db.rawQuery('SELECT COUNT (*) as cant from Materiale where courseID =$id_curso');
+    print ("total por curso");
+    print (res[0]["cant"]);
+    return  int.parse(res[0]["cant"].toString()) ;
+  }
+
   //actualizar 
   Future<int> updateMateriale(Materiale nuevoMateriale)async{
     final db = await database;
@@ -174,6 +193,7 @@ Future<List<Materiale>>getMaterialesByIdCurso(int idCurso) async {
     final res = await db.rawUpdate('UPDATE Materiale set descargado = $estado where id=$id');
     return res;
   }
+
 
   //eliminarregistros
   Future<int>deleteMateriale(int id) async{

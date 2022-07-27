@@ -55,4 +55,12 @@ class Estilos {
       fontWeight: FontWeight.bold
     );
   }
+
+    static TextStyle texto_barra(Color colortxt){
+    return TextStyle(
+      color: colortxt,
+      fontSize: 20.0,
+      fontWeight: FontWeight.bold
+    );
+  }
 }

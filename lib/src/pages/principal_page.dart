@@ -51,7 +51,7 @@ class _PrincipalPageState extends State<PrincipalPage> {
       return Scaffold(
             appBar: AppBar(
               //leading: SizedBox(width: 10.0,height: 10.0,),
-              
+              backgroundColor: Theme.of(context).primaryColor,
               centerTitle: false,
               automaticallyImplyLeading: false,
         title: cargando

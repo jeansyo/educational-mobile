@@ -1,3 +1,6 @@
+
+
+import 'package:appedvies/src/estilos.dart';
 import 'package:appedvies/src/models/curso.dart';
 import 'package:appedvies/src/models/route_argument.dart';
 import 'package:appedvies/src/pages/materiales_curso_page.dart';
@@ -15,6 +18,7 @@ class AsignaturasPage extends StatefulWidget {
 
 class _AsignaturasPageState extends State<AsignaturasPage> {
   List<Curso> lCursos =[];
+  List<double> lAvance=[];
   bool cargando = false;
   String apitoken ='';
   @override
@@ -33,13 +37,15 @@ class _AsignaturasPageState extends State<AsignaturasPage> {
           shrinkWrap: true,
           itemCount: lCursos.length,
           itemBuilder: (context,index ){
-            return tile(lCursos.elementAt(index));
+             //this.obtieneAvance(lCursos.elementAt(index));
+            return tile(lCursos.elementAt(index),lAvance.elementAt(index));
           })
       ),
       ); 
   }
 
-  Widget tile(Curso curso){
+  Widget tile(Curso curso,double avance){
+
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
@@ -74,7 +80,27 @@ class _AsignaturasPageState extends State<AsignaturasPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(curso.classname??"SIn datos",style: TextStyle(fontWeight: FontWeight.bold),maxLines: 1, overflow: TextOverflow.ellipsis),
-                      Text(curso.recommended??"Sin recomendaciones",style: TextStyle(fontStyle: FontStyle.italic),maxLines: 1, overflow: TextOverflow.ellipsis)
+                      Text(curso.recommended??"Sin recomendaciones",style: TextStyle(fontStyle: FontStyle.italic),maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Stack(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(4.0),
+                            decoration: BoxDecoration(
+
+                              borderRadius: BorderRadius.circular(6.0),
+                              color: Color.fromRGBO(144, 202, 249,1.0)
+                            ),
+                            child: LinearProgressIndicator(
+                              value: avance,
+                              minHeight: 18.0,
+                              ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(top: 2.5),
+                            alignment: Alignment.center,
+                            child: Text('${(avance*100).round()} %',style: Estilos.texto_barra(Colors.white),),)
+                        ],
+                      )
                     ],
                   ),
                 ),
@@ -86,8 +112,17 @@ class _AsignaturasPageState extends State<AsignaturasPage> {
       setState(() {});
       apitoken = await repol.getApiToken();
       lCursos = await DBProvider.db.getTodosCursos();
+      await obtieneAvances(lCursos);
       cargando= false;
       setState(() {});
 
   } 
+  obtieneAvances(List <Curso> cursos)async {
+  double porc=0.0;
+  for (Curso curs in cursos){
+    porc = await obtienePorcentaje(await DBProvider.db.contarMaterialesXCurso(curs.id??0), 
+                      await DBProvider.db.contarMaterialesXestadoYCurso(curs.id??0,1));
+    lAvance.add(porc);
+  }   
+  }
 }
